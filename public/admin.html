@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Nueva Noticia</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; box-sizing: border-box; }
+        
+        .pestaña-item { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; background: #f9f9f9; border-radius: 5px;}
+        .btn-add { background-color: #28a745; color: white; border: none; padding: 10px; cursor: pointer; }
+        .btn-submit { background-color: #007bff; color: white; border: none; padding: 10px 20px; font-size: 1.1em; cursor: pointer; margin-top: 20px;}
+        .btn-logout { background-color: #dc3545; float: right; color: white; border: none; padding: 5px 10px; cursor: pointer;}
+    </style>
+</head>
+<body>
+
+    <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+    <h1>Publicar Nueva Noticia</h1>
+
+    <form id="newsForm">
+        <div class="form-group">
+            <label>Título Principal del Evento:</label>
+            <input type="text" name="titulo" required placeholder="Ej: Expo Ingeniería 2025">
+        </div>
+
+        <div style="display: flex; gap: 20px;">
+            <div class="form-group" style="flex: 1;">
+                <label>Fecha Inicio (Activa desde):</label>
+                <input type="datetime-local" name="fecha_inicio" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Fecha Fin (Pasa a eventos pasados):</label>
+                <input type="datetime-local" name="fecha_fin" required>
+            </div>
+        </div>
+
+        <h3>Infografías / Pestañas</h3>
+        <div id="pestañas-container">
+            </div>
+
+        <button type="button" class="btn-add" onclick="agregarPestana()">+ Agregar Pestaña</button>
+        <br>
+        <button type="submit" class="btn-submit">Publicar Noticia</button>
+    </form>
+
+    <script>
+        // Verificar sesión
+        if (!localStorage.getItem('adminUser')) window.location.href = '/login.html';
+
+        function cerrarSesion() {
+            localStorage.removeItem('adminUser');
+            window.location.href = '/login.html';
+        }
+
+        // Función para agregar campos de pestaña visualmente
+        function agregarPestana() {
+            const div = document.createElement('div');
+            div.className = 'pestaña-item';
+            div.innerHTML = `
+                <label>Título de la Pestaña (Ej: "Cronograma", "Mapa"):</label>
+                <input type="text" name="titulos_pestana" required>
+                <label style="margin-top:5px">Imagen Infografía:</label>
+                <input type="file" name="imagenes" accept="image/*" required>
+                <button type="button" onclick="this.parentElement.remove()" style="margin-top:5px; background:#dc3545; color:white; border:none; padding:5px;">Eliminar</button>
+            `;
+            document.getElementById('pestañas-container').appendChild(div);
+        }
+
+        // Agregar una pestaña por defecto al iniciar
+        agregarPestana();
+
+        // Enviar formulario
+        document.getElementById('newsForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target); // FormData maneja archivos automáticamente
+
+            const response = await fetch('/api/noticias', {
+                method: 'POST',
+                body: formData 
+                // Nota: Al usar FormData, NO ponemos Content-Type header, el navegador lo pone solo
+            });
+
+            const data = await response.json();
+            
+            if(response.ok) {
+                alert('¡Noticia guardada!');
+                window.location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        });
+    </script>
+</body>
+</html>

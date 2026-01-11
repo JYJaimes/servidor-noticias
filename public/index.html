@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noticias e Infografías</title>
+    <style>
+        /* --- ESTILOS GENERALES --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
+        h1 { text-align: center; color: #333; }
+        h2 { border-bottom: 2px solid #007bff; padding-bottom: 5px; color: #444; margin-top: 40px; }
+        
+        .admin-link { position: absolute; top: 20px; right: 20px; text-decoration: none; color: #007bff; font-weight: bold; }
+
+        /* --- CONTENEDOR DE TARJETAS --- */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        
+        /* --- TARJETA DE NOTICIA --- */
+        .card { background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
+        .card-header { padding: 15px; background: #007bff; color: white; }
+        .card-header h3 { margin: 0; font-size: 1.2em; }
+        .fechas { font-size: 0.8em; opacity: 0.9; margin-top: 5px; }
+
+        /* --- SISTEMA DE PESTAÑAS (TABS) --- */
+        .tabs { display: flex; background: #eee; overflow-x: auto; }
+        .tab-btn { flex: 1; border: none; background: #eee; padding: 10px; cursor: pointer; font-weight: bold; color: #555; border-bottom: 3px solid transparent; white-space: nowrap; }
+        .tab-btn:hover { background: #ddd; }
+        .tab-btn.active { border-bottom: 3px solid #007bff; color: #007bff; background: white; }
+
+        /* --- IMAGEN --- */
+        .img-container { height: 300px; background: #ddd; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .img-container img { width: 100%; height: 100%; object-fit: contain; } /* 'contain' para ver toda la infografía */
+        
+        /* --- ESTILOS POR ESTADO --- */
+        .seccion-vacia { color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <a href="/login.html" class="admin-link">Ir al Admin</a>
+    <h1>Portal de Eventos</h1>
+
+    <h2> Eventos Activos</h2>
+    <div id="container-activos" class="grid-container"></div>
+
+    <h2>Próximos Eventos</h2>
+    <div id="container-proximos" class="grid-container"></div>
+
+    <h2>Historial (Pasados)</h2>
+    <div id="container-pasados" class="grid-container"></div>
+
+    <script>
+        // Función principal que se ejecuta al cargar
+        async function cargarNoticias() {
+            try {
+                const response = await fetch('/api/noticias');
+                const noticias = await response.json();
+
+                const ahora = new Date();
+
+                // Limpiamos contenedores
+                const cActivos = document.getElementById('container-activos');
+                const cProximos = document.getElementById('container-proximos');
+                const cPasados = document.getElementById('container-pasados');
+
+                let countActivos = 0, countProximos = 0, countPasados = 0;
+
+                noticias.forEach(noticia => {
+                    const inicio = new Date(noticia.fecha_inicio);
+                    const fin = new Date(noticia.fecha_fin);
+                    
+                    // Convertir el string JSON de la base de datos a Objeto JS real
+                    // Si viene como objeto directo (depende de config mysql), esto lo maneja
+                    let contenido = noticia.contenido_json;
+                    if (typeof contenido === 'string') {
+                        contenido = JSON.parse(contenido);
+                    }
+
+                    // --- LÓGICA DE CLASIFICACIÓN ---
+                    let contenedorDestino;
+
+                    if (ahora >= inicio && ahora <= fin) {
+                        contenedorDestino = cActivos;
+                        countActivos++;
+                    } else if (ahora < inicio) {
+                        contenedorDestino = cProximos;
+                        countProximos++;
+                    } else {
+                        contenedorDestino = cPasados;
+                        countPasados++;
+                    }
+
+                    // --- CREAR TARJETA HTML ---
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    // Generar botones de pestañas dinámicamente
+                    let tabsHTML = '';
+                    contenido.forEach((item, index) => {
+                        const activeClass = index === 0 ? 'active' : '';
+                        // Usamos onclick para llamar a una función que definiremos abajo
+                        tabsHTML += `<button class="tab-btn ${activeClass}" onclick="cambiarPestana(this, '${item.imagen}')">${item.titulo}</button>`;
+                    });
+
+                    // HTML de la tarjeta
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <h3>${noticia.titulo_principal}</h3>
+                            <div class="fechas">
+                                Del: ${inicio.toLocaleDateString()} ${inicio.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} <br>
+                                Al: ${fin.toLocaleDateString()} ${fin.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </div>
+                        </div>
+                        <div class="tabs">
+                            ${tabsHTML}
+                        </div>
+                        <div class="img-container">
+                            <img src="${contenido[0].imagen}" alt="Infografía">
+                        </div>
+                    `;
+
+                    contenedorDestino.appendChild(card);
+                });
+
+                // Mensajes si no hay eventos
+                if(countActivos === 0) cActivos.innerHTML = '<p class="seccion-vacia">No hay eventos activos en este momento.</p>';
+                if(countProximos === 0) cProximos.innerHTML = '<p class="seccion-vacia">No hay eventos programados.</p>';
+                
+            } catch (error) {
+                console.error("Error cargando noticias:", error);
+            }
+        }
+
+        // --- FUNCIÓN PARA CAMBIAR IMAGEN AL DAR CLIC EN PESTAÑA ---
+        // Esta función se llama desde el HTML generado arriba
+        window.cambiarPestana = function(boton, urlImagen) {
+            // 1. Encontrar la tarjeta padre de este botón
+            const card = boton.closest('.card');
+            
+            // 2. Quitar clase 'active' a todos los botones de esa tarjeta
+            const botones = card.querySelectorAll('.tab-btn');
+            botones.forEach(btn => btn.classList.remove('active'));
+            
+            // 3. Poner clase 'active' al botón clickeado
+            boton.classList.add('active');
+            
+            // 4. Cambiar la imagen
+            const img = card.querySelector('.img-container img');
+            img.src = urlImagen;
+        }
+
+        // Iniciar todo
+        cargarNoticias();
+    </script>
+</body>
+</html>

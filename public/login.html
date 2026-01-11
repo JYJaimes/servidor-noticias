@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin - Noticias</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; }
+        .login-container { background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 300px; }
+        input { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .error { color: red; font-size: 0.9em; margin-top: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <a href="/" style="text-decoration: none; color: #666; font-size: 0.9em; display: block; margin-bottom: 15px;">&larr; Volver a Noticias</a>
+    
+            <h2 style="text-align: center;">Acceso Admin</h2>
+            <form id="loginForm">
+            <input type="text" id="username" placeholder="Usuario" required>
+            <input type="password" id="password" placeholder="Contraseña" required>
+            <button type="submit">Ingresar</button>
+        </form>
+        <p id="mensaje" class="error"></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const mensajeDiv = document.getElementById('mensaje');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Evita que la página se recargue sola
+            mensajeDiv.innerText = ""; // Limpiar mensajes previos
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                // Hacemos la petición a TU servidor
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Si el login es correcto (Status 200)
+                    alert('¡Bienvenido!');
+                    // Guardamos que el usuario está logueado
+                    localStorage.setItem('adminUser', data.user);
+                    // Redirigimos al panel (que crearemos ahora)
+                    window.location.href = '/admin.html';
+                } else {
+                    // Si hay error (Status 401 o 403) - Mostramos el mensaje de intentos
+                    mensajeDiv.innerText = data.message;
+                }
+
+            } catch (error) {
+                console.error(error);
+                mensajeDiv.innerText = "Error de conexión con el servidor";
+            }
+        });
+    </script>
+</body>
+</html>
