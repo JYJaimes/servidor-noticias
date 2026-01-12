@@ -1,16 +1,96 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noticias e Infografías</title>
     <style>
+        .main-footer {
+    background-color: #222; /* Fondo oscuro */
+    color: white;
+    text-align: center;
+    padding: 30px 0;
+    margin-top: auto; /* Empuja el footer al fondo */
+}
+
+.social-icons {
+    margin: 20px 0;
+}
+
+.social-link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    margin: 0 10px;
+    border-radius: 50%; /* Círculo perfecto */
+    background-color: #444;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: 0.3s;
+}
+
+/* Colores al pasar el mouse */
+.social-link.facebook:hover { background-color: #3b5998; }
+.social-link.instagram:hover { background-color: #C13584; }
+.social-link.twitter:hover { background-color: #1DA1F2; }
         /* --- ESTILOS GENERALES --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
         h1 { text-align: center; color: #333; }
         h2 { border-bottom: 2px solid #007bff; padding-bottom: 5px; color: #444; margin-top: 40px; }
         
         .admin-link { position: absolute; top: 20px; right: 20px; text-decoration: none; color: #007bff; font-weight: bold; }
+/* Contenedor del encabezado */
+.main-header {
+    display: flex;
+    align-items: center; /* Centra verticalmente */
+    background-color: #ffffff; /* O el color que uses */
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* El truco para que sea responsivo */
+.responsive-logo {
+    max-height: 60px; /* Altura máxima en PC */
+    width: auto;      /* Mantiene la proporción */
+    display: block;
+}
+
+/* Ajuste para celulares (Pantallas pequeñas) */
+@media (max-width: 600px) {
+    .responsive-logo {
+        max-height: 40px; /* Se hace un poco más pequeño en cel */
+    }
+    .main-header h1 {
+        font-size: 1.2rem; /* El texto también se ajusta */
+        margin-left: 10px;
+    }
+}
+.ubicacion-section {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #f9f9f9;
+}
+
+.mapa-container iframe {
+    width: 100%;       /* Ocupa todo el ancho disponible */
+    max-width: 800px;  /* Pero no más de 800px en PC */
+    height: 300px;     /* Altura fija */
+    border-radius: 10px;
+}
+
+.btn-mapa {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background-color: #4285F4; /* Azul Google */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
 
         /* --- CONTENEDOR DE TARJETAS --- */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
@@ -36,7 +116,12 @@
     </style>
 </head>
 <body>
-
+<header class="main-header">
+    <div class="logo-container">
+        <img src="/uploads/logo.png" alt="Logo del Evento" class="responsive-logo">
+    </div>
+    <h1>Noticias del Evento</h1>
+</header>
     <a href="/login.html" class="admin-link">Ir al Admin</a>
     <h1>Portal de Eventos</h1>
 
@@ -152,5 +237,34 @@
         // Iniciar todo
         cargarNoticias();
     </script>
+    <section class="ubicacion-section">
+    <h2>Ubicación de los eventos</h2>
+    <p>Av. Juarez 58, Colonia Centro, Centro, Cuauhtémoc, 06050 Ciudad de México, CDMX</p>
+    
+    <div class="mapa-container">
+        <iframe src="https://www.google.com/maps/embed?pb=..." width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+
+    <a href="https://maps.app.goo.gl/P4ptKeaSMFq74wK38" target="_blank" class="btn-mapa">
+        Ver en Google Maps
+    </a>
+</section>
+<footer class="main-footer">
+    <h3>Síguenos en nuestras redes</h3>
+    <div class="social-icons">
+        <a href="https://facebook.com" target="_blank" class="social-link facebook">
+            <i class="fab fa-facebook-f"></i>
+        </a>
+        
+        <a href="https://instagram.com" target="_blank" class="social-link instagram">
+            <i class="fab fa-instagram"></i>
+        </a>
+        
+        <a href="https://twitter.com" target="_blank" class="social-link twitter">
+            <i class="fab fa-twitter"></i>
+        </a>
+    </div>
+    <p>&copy; 2026 Jose Yael - Todos los derechos reservados.</p>
+</footer>
 </body>
 </html>
