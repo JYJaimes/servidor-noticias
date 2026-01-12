@@ -16,17 +16,27 @@ app.use(express.static('public')); // Para servir tus HTML y CSS
 
 // --- 2. CONEXIÓN BD ---
 // CAMBIO IMPORTANTE: Ahora la variable se llama 'db' para que coincida con tus rutas
-const db = mysql.createConnection({
+// --- 2. CONEXIÓN BD (MODO POOL) ---
+// Usamos createPool en lugar de createConnection para que no se desconecte
+const db = mysql.createPool({
     host: process.env.MYSQLHOST || 'mainline.proxy.rlwy.net',
     user: process.env.MYSQLUSER || 'root',
     password: process.env.MYSQLPASSWORD || 'aVPmTgUWjnvGIyBHUuXKEUntSCFDQnxP',
     database: process.env.MYSQLDATABASE || 'railway',
-    port: process.env.MYSQLPORT || 23193
+    port: process.env.MYSQLPORT || 23193,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
 });
 
-db.connect((err) => {
-    if (err) console.error('Error BD:', err);
-    else console.log('✅ Conectado a MySQL');
+// Prueba de conexión inicial
+db.getConnection((err, connection) => {
+    if (err) {
+        console.error('❌ Error conectando a BD:', err.message);
+    } else {
+        console.log('✅ Conectado a MySQL con Pool');
+        connection.release();
+    }
 });
 
 // --- 3. CONFIGURACIÓN MULTER (Subida de imágenes) ---
