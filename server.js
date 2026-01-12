@@ -169,7 +169,19 @@ app.get('/api/noticias', (req, res) => {
     });
 });
 
+// --- MANEJO DE ERRORES GLOBAL (Poner antes del app.listen) ---
+app.use((err, req, res, next) => {
+    console.error("❌ ERROR AL SUBIR IMAGEN:", err); // Esto mostrará el error real en Railway
+    
+    if (err.message && err.message.includes('Cloudinary')) {
+         return res.status(500).send({ message: "Error de configuración en Cloudinary: " + err.message });
+    }
+    
+    res.status(500).send({ message: "Ocurrió un error en el servidor: " + err.message });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
+
