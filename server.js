@@ -70,15 +70,15 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // --- CONEXIÓN BD ---
-const db = mysql.createConnection({
-    host: process.env.MYSQLHOST || 'localhost',
-    user: process.env.MYSQLUSER || 'root',
-    password: process.env.MYSQLPASSWORD || 'AAlleexxyyaaeell22770022',
-    database: process.env.MYSQLDATABASE || 'noticias_db',
-    port: process.env.MYSQLPORT || 3306
+    const connection = mysql.createConnection({
+     host: process.env.MYSQLHOST || 'localhost',
+        user: process.env.MYSQLUSER || 'root',
+        password: process.env.MYSQLPASSWORD || '',
+        database: process.env.MYSQLDATABASE || 'noticias_db',
+         port: process.env.MYSQLPORT || 3306
 });
 
-db.connect((err) => {
+connection.connect((err) => {
     if (err) console.error('Error BD:', err);
     else console.log('✅ Conectado a MySQL');
 });
