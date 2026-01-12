@@ -17,11 +17,11 @@ app.use(express.static('public')); // Para servir tus HTML y CSS
 // --- 2. CONEXIÓN BD ---
 // CAMBIO IMPORTANTE: Ahora la variable se llama 'db' para que coincida con tus rutas
 const db = mysql.createConnection({
-    host: process.env.MYSQLHOST || 'localhost',
+    host: process.env.MYSQLHOST || 'mainline.proxy.rlwy.net',
     user: process.env.MYSQLUSER || 'root',
-    password: process.env.MYSQLPASSWORD || '',
-    database: process.env.MYSQLDATABASE || 'noticias_db',
-    port: process.env.MYSQLPORT || 3306
+    password: process.env.MYSQLPASSWORD || 'aVPmTgUWjnvGIyBHUuXKEUntSCFDQnxP',
+    database: process.env.MYSQLDATABASE || 'railway',
+    port: process.env.MYSQLPORT || 23193
 });
 
 db.connect((err) => {
