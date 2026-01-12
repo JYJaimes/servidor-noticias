@@ -86,15 +86,18 @@ app.post('/api/noticias', upload.array('imagenes'), (req, res) => {
         // Ahora sí funciona porque 'db' existe
         db.query(sql, [titulo, fecha_inicio, fecha_fin, contenidoJson], (err, result) => {
             if (err) {
-                console.error(err);
+                // Esto nos mostrará el mensaje exacto del error de MySQL
+                console.error("❌ ERROR BD DETALLADO:", JSON.stringify(err, null, 2)); 
                 return res.status(500).send({ message: "Error al guardar en BD" });
             }
             res.status(200).send({ message: "Noticia publicada exitosamente" });
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).send({ message: "Error en el servidor" });
+        // Esto nos mostrará el mensaje exacto si falla Cloudinary o Multer
+        console.error("❌ ERROR SERVER DETALLADO:", JSON.stringify(error, null, 2));
+        console.error("❌ MENSAJE ERROR:", error.message); 
+        res.status(500).send({ message: "Error en el servidor: " + error.message });
     }
 });
 
