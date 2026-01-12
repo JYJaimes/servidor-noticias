@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const { v2: cloudinary } = require('cloudinary');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const path = require('path');
-
+const multer = require('multer');
 const app = express();
 
 // --- 1. CONFIGURACIONES (Siempre deben ir al principio) ---
