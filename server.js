@@ -4,7 +4,8 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs'); 
-const multer = require('multer');
+const { v2: cloudinary } = require('cloudinary');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const path = require('path');
 
 const app = express();
@@ -13,6 +14,8 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); // Para servir tus HTML y CSS
+
+
 
 // --- 2. CONEXIÓN BD ---
 // CAMBIO IMPORTANTE: Ahora la variable se llama 'db' para que coincida con tus rutas
@@ -40,14 +43,22 @@ db.getConnection((err, connection) => {
 });
 
 // --- 3. CONFIGURACIÓN MULTER (Subida de imágenes) ---
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'public/uploads/'); 
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
+// Configuración de Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
+
+// Configuración de Multer para Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'noticias_upiicsa', // Nombre de la carpeta en Cloudinary
+        allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+    },
+});
+
 const upload = multer({ storage: storage });
 
 // --- 4. RUTAS ---
@@ -65,8 +76,8 @@ app.post('/api/noticias', upload.array('imagenes'), (req, res) => {
         const titulosArray = Array.isArray(titulos_pestana) ? titulos_pestana : [titulos_pestana];
         
         const contenido = titulosArray.map((tituloTab, index) => ({
-            titulo: tituloTab,
-            imagen: '/uploads/' + archivos[index].filename
+        titulo: tituloTab,
+        imagen: archivos[index].path // <--- Cloudinary nos da la URL directa aquí
         }));
 
         const contenidoJson = JSON.stringify(contenido);
