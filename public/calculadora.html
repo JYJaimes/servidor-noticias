@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Tipos - Pokémon GO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; }
+        
+        /* Selectores */
+        .select-group { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        select { padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ddd; width: 45%; }
+        
+        /* Resultados */
+        .results-section { margin-top: 20px; }
+        .type-badge { 
+            display: inline-block; padding: 5px 10px; margin: 3px; border-radius: 5px; color: white; font-weight: bold; text-shadow: 1px 1px 2px black; 
+        }
+        
+        h3 { border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 20px; }
+
+        /* Colores de Tipos (Estándar Pokémon) */
+        .normal { background-color: #A8A77A; }
+        .fuego { background-color: #EE8130; }
+        .agua { background-color: #6390F0; }
+        .electrico { background-color: #F7D02C; }
+        .planta { background-color: #7AC74C; }
+        .hielo { background-color: #96D9D6; }
+        .lucha { background-color: #C22E28; }
+        .veneno { background-color: #A33EA1; }
+        .tierra { background-color: #E2BF65; }
+        .volador { background-color: #A98FF3; }
+        .psiquico { background-color: #F95587; }
+        .bicho { background-color: #A6B91A; }
+        .roca { background-color: #B6A136; }
+        .fantasma { background-color: #735797; }
+        .dragon { background-color: #6F35FC; }
+        .siniestro { background-color: #705746; }
+        .acero { background-color: #B7B7CE; }
+        .hada { background-color: #D685AD; }
+
+        .btn-volver { display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #007bff; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🛡️ Calculadora de Resistencias</h1>
+    <p style="text-align: center; color: #666;">Selecciona los tipos del Pokémon defensor</p>
+
+    <div class="select-group">
+        <select id="type1" onchange="calcular()">
+            <option value="none">Tipo 1</option>
+            </select>
+        <select id="type2" onchange="calcular()">
+            <option value="none">Tipo 2 (Opcional)</option>
+            </select>
+    </div>
+
+    <div id="resultados" class="results-section">
+        </div>
+
+    <a href="/index.html" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver al Inicio</a>
+</div>
+
+<script>
+    // Matriz de efectividad (Atacante -> Defensor)
+    // 1 = Neutro, 2 = Super Eficaz, 0.5 = No muy eficaz, 0 = Inmune (En GO es 0.39)
+    const typeChart = {
+        normal: { roca: 0.5, fantasma: 0, acero: 0.5 },
+        fuego: { fuego: 0.5, agua: 0.5, planta: 2, hielo: 2, bicho: 2, roca: 0.5, dragon: 0.5, acero: 2 },
+        agua: { fuego: 2, agua: 0.5, planta: 0.5, tierra: 2, roca: 2, dragon: 0.5 },
+        electrico: { agua: 2, electrico: 0.5, planta: 0.5, tierra: 0, volador: 2, dragon: 0.5 },
+        planta: { fuego: 0.5, agua: 2, planta: 0.5, veneno: 0.5, tierra: 2, volador: 0.5, bicho: 0.5, roca: 2, dragon: 0.5, acero: 0.5 },
+        hielo: { fuego: 0.5, agua: 0.5, planta: 2, hielo: 0.5, tierra: 2, volador: 2, dragon: 2, acero: 0.5 },
+        lucha: { normal: 2, hielo: 2, veneno: 0.5, volador: 0.5, psiquico: 0.5, bicho: 0.5, roca: 2, fantasma: 0, siniestro: 2, acero: 2, hada: 0.5 },
+        veneno: { planta: 2, veneno: 0.5, tierra: 0.5, roca: 0.5, fantasma: 0.5, acero: 0, hada: 2 },
+        tierra: { fuego: 2, electrico: 2, planta: 0.5, veneno: 2, volador: 0, bicho: 0.5, roca: 2, acero: 2 },
+        volador: { electrico: 0.5, planta: 2, lucha: 2, bicho: 2, roca: 0.5, acero: 0.5 },
+        psiquico: { lucha: 2, veneno: 2, psiquico: 0.5, siniestro: 0, acero: 0.5 },
+        bicho: { fuego: 0.5, planta: 2, lucha: 0.5, veneno: 0.5, volador: 0.5, psiquico: 2, fantasma: 0.5, siniestro: 2, acero: 0.5, hada: 0.5 },
+        roca: { fuego: 2, hielo: 2, lucha: 0.5, tierra: 0.5, volador: 2, bicho: 2, acero: 0.5 },
+        fantasma: { normal: 0, psiquico: 2, fantasma: 2, siniestro: 0.5 },
+        dragon: { dragon: 2, acero: 0.5, hada: 0 },
+        siniestro: { lucha: 0.5, psiquico: 2, fantasma: 2, siniestro: 0.5, hada: 0.5 },
+        acero: { fuego: 0.5, agua: 0.5, electrico: 0.5, hielo: 2, roca: 2, acero: 0.5, hada: 2 },
+        hada: { fuego: 0.5, lucha: 2, veneno: 0.5, dragon: 2, siniestro: 2, acero: 0.5 }
+    };
+
+    const types = Object.keys(typeChart);
+    const select1 = document.getElementById('type1');
+    const select2 = document.getElementById('type2');
+
+    // Llenar selects
+    types.forEach(t => {
+        const opt1 = document.createElement('option');
+        opt1.value = t;
+        opt1.innerText = t.charAt(0).toUpperCase() + t.slice(1);
+        select1.appendChild(opt1);
+
+        const opt2 = document.createElement('option');
+        opt2.value = t;
+        opt2.innerText = t.charAt(0).toUpperCase() + t.slice(1);
+        select2.appendChild(opt2);
+    });
+
+    function calcular() {
+        const t1 = select1.value;
+        const t2 = select2.value;
+        const container = document.getElementById('resultados');
+        container.innerHTML = '';
+
+        if (t1 === 'none') return;
+
+        // Multiplicadores
+        let effectiveness = {};
+
+        types.forEach(atacante => {
+            let mult1 = (typeChart[atacante][t1] !== undefined) ? typeChart[atacante][t1] : 1;
+            let mult2 = 1;
+            
+            if (t2 !== 'none') {
+                mult2 = (typeChart[atacante][t2] !== undefined) ? typeChart[atacante][t2] : 1;
+            }
+
+            // AJUSTE POKÉMON GO (La inmunidad no es 0, es 0.390625)
+            if (mult1 === 0) mult1 = 0.390625;
+            if (mult2 === 0) mult2 = 0.390625;
+
+            effectiveness[atacante] = mult1 * mult2;
+        });
+
+        // Clasificar resultados
+        let debilidadDoble = []; // > 1.6 (aprox 2.56)
+        let debilidad = [];      // > 1 (1.6)
+        let resistencia = [];    // < 1 (0.625)
+        let resistenciaDoble = []; // < 0.6 (0.39 o 0.24)
+
+        for (const [tipo, valor] of Object.entries(effectiveness)) {
+            if (valor > 1.61) debilidadDoble.push(tipo);
+            else if (valor > 1) debilidad.push(tipo);
+            else if (valor < 0.391) resistenciaDoble.push(tipo);
+            else if (valor < 1) resistencia.push(tipo);
+        }
+
+        // Renderizar HTML
+        const html = `
+            ${generarSeccion('☠️ Debilidad Doble (2.56x)', debilidadDoble)}
+            ${generarSeccion('💥 Debilidades (1.6x)', debilidad)}
+            ${generarSeccion('🛡️ Resistencias (0.625x)', resistencia)}
+            ${generarSeccion('🏰 Resistencia Doble/Inmune (0.39x)', resistenciaDoble)}
+        `;
+        
+        container.innerHTML = html;
+    }
+
+    function generarSeccion(titulo, lista) {
+        if (lista.length === 0) return '';
+        let badges = lista.map(t => `<span class="type-badge ${t}">${t.toUpperCase()}</span>`).join('');
+        return `<h3>${titulo}</h3><div>${badges}</div>`;
+    }
+</script>
+
+</body>
+</html>

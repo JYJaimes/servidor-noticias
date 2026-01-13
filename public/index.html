@@ -5,92 +5,132 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noticias e Infografías</title>
+    
+    <script>
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "250px";
+        }
+
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+        }
+    </script>
+
     <style>
-        .main-footer {
-    background-color: #222; /* Fondo oscuro */
-    color: white;
-    text-align: center;
-    padding: 30px 0;
-    margin-top: auto; /* Empuja el footer al fondo */
-}
-
-.social-icons {
-    margin: 20px 0;
-}
-
-.social-link {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    width: 40px;
-    height: 40px;
-    margin: 0 10px;
-    border-radius: 50%; /* Círculo perfecto */
-    background-color: #444;
-    color: white;
-    text-decoration: none;
-    font-size: 1.2rem;
-    transition: 0.3s;
-}
-
-/* Colores al pasar el mouse */
-.social-link.facebook:hover { background-color: #3b5998; }
-.social-link.instagram:hover { background-color: #C13584; }
-.social-link.twitter:hover { background-color: #1DA1F2; }
         /* --- ESTILOS GENERALES --- */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px; }
         h1 { text-align: center; color: #333; }
         h2 { border-bottom: 2px solid #007bff; padding-bottom: 5px; color: #444; margin-top: 40px; }
-        
-        .admin-link { position: absolute; top: 20px; right: 20px; text-decoration: none; color: #007bff; font-weight: bold; }
-/* Contenedor del encabezado */
-.main-header {
-    display: flex;
-    align-items: center; /* Centra verticalmente */
-    background-color: #ffffff; /* O el color que uses */
-    padding: 10px 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
 
-/* El truco para que sea responsivo */
-.responsive-logo {
-    max-height: 60px; /* Altura máxima en PC */
-    width: auto;      /* Mantiene la proporción */
-    display: block;
-}
+        /* --- ESTILOS DEL MENÚ LATERAL (SIDENAV) --- */
+        .sidenav {
+            height: 100%;
+            width: 0; /* Empieza cerrado */
+            position: fixed;
+            z-index: 1000;
+            top: 0;
+            right: 0; /* Sale de la derecha */
+            background-color: #111;
+            overflow-x: hidden;
+            transition: 0.5s; /* Animación suave */
+            padding-top: 60px;
+            display: flex;
+            flex-direction: column; /* Para poder empujar elementos al fondo */
+        }
 
-/* Ajuste para celulares (Pantallas pequeñas) */
-@media (max-width: 600px) {
-    .responsive-logo {
-        max-height: 40px; /* Se hace un poco más pequeño en cel */
-    }
-    .main-header h1 {
-        font-size: 1.2rem; /* El texto también se ajusta */
-        margin-left: 10px;
-    }
-}
-.ubicacion-section {
-    text-align: center;
-    padding: 40px 20px;
-    background-color: #f9f9f9;
-}
+        .sidenav a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
 
-.mapa-container iframe {
-    width: 100%;       /* Ocupa todo el ancho disponible */
-    max-width: 800px;  /* Pero no más de 800px en PC */
-    height: 300px;     /* Altura fija */
-    border-radius: 10px;
-}
+        .sidenav a:hover {
+            color: #f1f1f1;
+        }
 
-.btn-mapa {
-    display: inline-block;
-    margin-top: 15px;
-    padding: 10px 20px;
-    background-color: #4285F4; /* Azul Google */
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-}
+        .sidenav .closebtn {
+            position: absolute;
+            top: 0;
+            right: 25px;
+            font-size: 36px;
+            margin-left: 50px;
+        }
+
+        /* Estilo especial para el botón Admin al fondo */
+        .sidenav .admin-bottom {
+            margin-top: auto; /* Empuja este elemento al final del contenedor */
+            margin-bottom: 20px;
+            color: #007bff;
+            font-size: 20px;
+            border-top: 1px solid #333;
+            padding-top: 20px;
+        }
+
+        /* Icono de hamburguesa */
+        .burger-icon {
+            font-size: 30px;
+            cursor: pointer;
+            color: #333;
+            position: absolute;
+            right: 20px;
+            top: 25px;
+        }
+
+        /* Ajuste para que el icono no choque con el header en móviles */
+        @media (max-width: 600px) {
+            .burger-icon {
+                top: 20px;
+            }
+            .responsive-logo {
+                max-height: 40px;
+            }
+            .main-header h1 {
+                font-size: 1.2rem;
+                margin-left: 10px;
+            }
+        }
+
+        /* --- HEADER --- */
+        .main-header {
+            display: flex;
+            align-items: center; 
+            background-color: #ffffff; 
+            padding: 10px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .responsive-logo {
+            max-height: 60px; 
+            width: auto;      
+            display: block;
+        }
+
+        /* --- UBICACIÓN --- */
+        .ubicacion-section {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #f9f9f9;
+        }
+
+        .mapa-container iframe {
+            width: 100%;       
+            max-width: 800px;  
+            height: 300px;     
+            border-radius: 10px;
+        }
+
+        .btn-mapa {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #4285F4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
 
         /* --- CONTENEDOR DE TARJETAS --- */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
@@ -109,20 +149,63 @@
 
         /* --- IMAGEN --- */
         .img-container { height: 300px; background: #ddd; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .img-container img { width: 100%; height: 100%; object-fit: contain; } /* 'contain' para ver toda la infografía */
+        .img-container img { width: 100%; height: 100%; object-fit: contain; } 
         
         /* --- ESTILOS POR ESTADO --- */
         .seccion-vacia { color: #888; font-style: italic; }
+
+        /* --- FOOTER --- */
+        .main-footer {
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 30px 0;
+            margin-top: auto;
+        }
+
+        .social-icons { margin: 20px 0; }
+
+        .social-link {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            margin: 0 10px;
+            border-radius: 50%;
+            background-color: #444;
+            color: white;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .social-link.facebook:hover { background-color: #3b5998; }
+        .social-link.instagram:hover { background-color: #C13584; }
+        .social-link.twitter:hover { background-color: #1DA1F2; }
     </style>
 </head>
 <body>
-<header class="main-header">
-    <div class="logo-container">
-        <img src="/uploads/logo.png" alt="Logo del Evento" class="responsive-logo">
+
+    <div id="mySidenav" class="sidenav">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="/index.html"><i class="fas fa-home"></i> Inicio</a>
+        <a href="/calculadora.html"><i class="fas fa-calculator"></i> Calculadora Tipos</a>
+        
+        <a href="/login.html" class="admin-bottom"><i class="fas fa-user-shield"></i> Ir al Admin</a>
     </div>
-    <h1>Noticias del Evento</h1>
-</header>
-    <a href="/login.html" class="admin-link">Ir al Admin</a>
+
+    <header class="main-header">
+        <div class="logo-container">
+            <img src="/uploads/logo.png" alt="Logo del Evento" class="responsive-logo">
+        </div>
+        <h1>Noticias del Evento</h1>
+        
+        <span class="burger-icon" onclick="openNav()">
+            <i class="fas fa-bars"></i>
+        </span>
+    </header>
+
     <h1>Portal de Eventos</h1>
 
     <h2> Eventos Activos</h2>
@@ -154,8 +237,6 @@
                     const inicio = new Date(noticia.fecha_inicio);
                     const fin = new Date(noticia.fecha_fin);
                     
-                    // Convertir el string JSON de la base de datos a Objeto JS real
-                    // Si viene como objeto directo (depende de config mysql), esto lo maneja
                     let contenido = noticia.contenido_json;
                     if (typeof contenido === 'string') {
                         contenido = JSON.parse(contenido);
@@ -179,15 +260,12 @@
                     const card = document.createElement('div');
                     card.className = 'card';
                     
-                    // Generar botones de pestañas dinámicamente
                     let tabsHTML = '';
                     contenido.forEach((item, index) => {
                         const activeClass = index === 0 ? 'active' : '';
-                        // Usamos onclick para llamar a una función que definiremos abajo
                         tabsHTML += `<button class="tab-btn ${activeClass}" onclick="cambiarPestana(this, '${item.imagen}')">${item.titulo}</button>`;
                     });
 
-                    // HTML de la tarjeta
                     card.innerHTML = `
                         <div class="card-header">
                             <h3>${noticia.titulo_principal}</h3>
@@ -207,7 +285,6 @@
                     contenedorDestino.appendChild(card);
                 });
 
-                // Mensajes si no hay eventos
                 if(countActivos === 0) cActivos.innerHTML = '<p class="seccion-vacia">No hay eventos activos en este momento.</p>';
                 if(countProximos === 0) cProximos.innerHTML = '<p class="seccion-vacia">No hay eventos programados.</p>';
                 
@@ -217,19 +294,11 @@
         }
 
         // --- FUNCIÓN PARA CAMBIAR IMAGEN AL DAR CLIC EN PESTAÑA ---
-        // Esta función se llama desde el HTML generado arriba
         window.cambiarPestana = function(boton, urlImagen) {
-            // 1. Encontrar la tarjeta padre de este botón
             const card = boton.closest('.card');
-            
-            // 2. Quitar clase 'active' a todos los botones de esa tarjeta
             const botones = card.querySelectorAll('.tab-btn');
             botones.forEach(btn => btn.classList.remove('active'));
-            
-            // 3. Poner clase 'active' al botón clickeado
             boton.classList.add('active');
-            
-            // 4. Cambiar la imagen
             const img = card.querySelector('.img-container img');
             img.src = urlImagen;
         }
@@ -237,41 +306,43 @@
         // Iniciar todo
         cargarNoticias();
     </script>
-    <section class="ubicacion-section">
-    <h2>Ubicación de los eventos</h2>
-    <p>Fuente de Neptuno, Alameda Central (Av. Juarez 58), Centro, Cuauhtémoc, 06050 Ciudad de México, CDMX</p>
-    <div class="mapa-container">
-        <iframe 
-            width="100%" 
-            height="450" 
-            style="border:0;" 
-            loading="lazy" 
-            allowfullscreen 
-            referrerpolicy="no-referrer-when-downgrade"
-            src="https://maps.google.com/maps?q=Fuente+de+Neptuno+Alameda+Central&t=&z=18&ie=UTF8&iwloc=&output=embed">
-        </iframe>
-    </div>
 
-    <a href="https://www.google.com.mx/maps/place/Fuente+de+Neptuno/@19.4356827,-99.1452984,18z/data=!4m14!1m7!3m6!1s0x85d1f92af577b44b:0xdb290ed58ba64e40!2sAlameda+Central!8m2!3d19.4359374!4d-99.1439285!16s%2Fm%2F02r4kv2!3m5!1s0x85d1f92a8636372f:0x292f260deb46b810!8m2!3d19.4355406!4d-99.1449982!16s%2Fg%2F11fj327s96" target="_blank" class="btn-mapa">
-        Ver en Google Maps
-    </a>
-</section>
-<footer class="main-footer">
-    <h3>Síguenos en nuestras redes</h3>
-    <div class="social-icons">
-        <a href="https://www.facebook.com/groups/544183595780445/?ref=share&mibextid=NSMWBT" target="_blank" class="social-link facebook">
-            <i class="fab fa-facebook-f"></i>
+    <section class="ubicacion-section">
+        <h2>Ubicación de los eventos</h2>
+        <p>Fuente de Neptuno, Alameda Central (Av. Juarez 58), Centro, Cuauhtémoc, 06050 Ciudad de México, CDMX</p>
+        <div class="mapa-container">
+            <iframe 
+                width="100%" 
+                height="450" 
+                style="border:0;" 
+                loading="lazy" 
+                allowfullscreen 
+                referrerpolicy="no-referrer-when-downgrade"
+                src="https://maps.google.com/maps?q=Fuente+de+Neptuno+Alameda+Central&t=&z=18&ie=UTF8&iwloc=&output=embed">
+            </iframe>
+        </div>
+
+        <a href="https://www.google.com.mx/maps/place/Fuente+de+Neptuno/@19.4356827,-99.1452984,18z/data=!4m14!1m7!3m6!1s0x85d1f92af577b44b:0xdb290ed58ba64e40!2sAlameda+Central!8m2!3d19.4359374!4d-99.1439285!16s%2Fm%2F02r4kv2!3m5!1s0x85d1f92a8636372f:0x292f260deb46b810!8m2!3d19.4355406!4d-99.1449982!16s%2Fg%2F11fj327s96" target="_blank" class="btn-mapa">
+            Ver en Google Maps
         </a>
-        
-        <a href="https://www.instagram.com/pokemongocdmxoficial?igsh=MTBpeXYwOHhvMHc4aw==" target="_blank" class="social-link instagram">
-            <i class="fab fa-instagram"></i>
-        </a>
-        
-        <a href="https://x.com/PoGoCDMXOficial" target="_blank" class="social-link twitter">
-            <i class="fab fa-twitter"></i>
-        </a>
-    </div>
-    <p>&copy; Yrodriguez90 - Todos los derechos reservados.</p>
-</footer>
+    </section>
+
+    <footer class="main-footer">
+        <h3>Síguenos en nuestras redes</h3>
+        <div class="social-icons">
+            <a href="https://www.facebook.com/groups/544183595780445/?ref=share&mibextid=NSMWBT" target="_blank" class="social-link facebook">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            
+            <a href="https://www.instagram.com/pokemongocdmxoficial?igsh=MTBpeXYwOHhvMHc4aw==" target="_blank" class="social-link instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+            
+            <a href="https://x.com/PoGoCDMXOficial" target="_blank" class="social-link twitter">
+                <i class="fab fa-twitter"></i>
+            </a>
+        </div>
+        <p>© Yrodriguez90 - Todos los derechos reservados.</p>
+    </footer>
 </body>
 </html>
