@@ -17,10 +17,10 @@
         /* Resultados */
         .results-section { margin-top: 20px; }
         .type-badge { 
-            display: inline-block; padding: 5px 10px; margin: 3px; border-radius: 5px; color: white; font-weight: bold; text-shadow: 1px 1px 2px black; 
+            display: inline-block; padding: 8px 12px; margin: 4px; border-radius: 20px; color: white; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3); font-size: 0.9em;
         }
         
-        h3 { border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 20px; }
+        h3 { border-bottom: 2px solid #ddd; padding-bottom: 5px; margin-top: 25px; font-size: 1.1em; color: #444; }
 
         /* Colores de Tipos (Estándar Pokémon) */
         .normal { background-color: #A8A77A; }
@@ -42,7 +42,8 @@
         .acero { background-color: #B7B7CE; }
         .hada { background-color: #D685AD; }
 
-        .btn-volver { display: block; text-align: center; margin-top: 20px; text-decoration: none; color: #007bff; font-weight: bold; }
+        .btn-volver { display: block; text-align: center; margin-top: 30px; text-decoration: none; color: #007bff; font-weight: bold; border: 1px solid #007bff; padding: 10px; border-radius: 5px; transition: 0.3s; }
+        .btn-volver:hover { background-color: #007bff; color: white; }
     </style>
 </head>
 <body>
@@ -50,14 +51,18 @@
 <div class="container">
     <h1>🛡️ Calculadora de Resistencias</h1>
     <p style="text-align: center; color: #666;">Selecciona los tipos del Pokémon defensor</p>
+    
+
+[Image of Pokemon Types Chart]
+
 
     <div class="select-group">
         <select id="type1" onchange="calcular()">
             <option value="none">Tipo 1</option>
-            </select>
+        </select>
         <select id="type2" onchange="calcular()">
             <option value="none">Tipo 2 (Opcional)</option>
-            </select>
+        </select>
     </div>
 
     <div id="resultados" class="results-section">
@@ -67,8 +72,9 @@
 </div>
 
 <script>
-    // Matriz de efectividad (Atacante -> Defensor)
-    // 1 = Neutro, 2 = Super Eficaz, 0.5 = No muy eficaz, 0 = Inmune (En GO es 0.39)
+    // 1. Matriz de efectividad BASE (Valores estándar: 0, 0.5, 1, 2)
+    // Usamos los valores simples aquí para facilitar la lectura del código, 
+    // luego la función 'obtenerMultiplicadorGO' los convierte a la matemática real de Niantic.
     const typeChart = {
         normal: { roca: 0.5, fantasma: 0, acero: 0.5 },
         fuego: { fuego: 0.5, agua: 0.5, planta: 2, hielo: 2, bicho: 2, roca: 0.5, dragon: 0.5, acero: 2 },
@@ -90,21 +96,23 @@
         hada: { fuego: 0.5, lucha: 2, veneno: 0.5, dragon: 2, siniestro: 2, acero: 0.5 }
     };
 
+    // 2. Lógica exacta de Pokémon GO
+    function obtenerMultiplicadorGO(valorBase) {
+        if (valorBase === 2) return 1.6;          // Super Eficaz
+        if (valorBase === 0.5) return 0.625;      // No muy eficaz
+        if (valorBase === 0) return 0.390625;     // Inmune (Doble resistencia)
+        return 1;                                 // Daño Neutro
+    }
+
     const types = Object.keys(typeChart);
     const select1 = document.getElementById('type1');
     const select2 = document.getElementById('type2');
 
     // Llenar selects
     types.forEach(t => {
-        const opt1 = document.createElement('option');
-        opt1.value = t;
-        opt1.innerText = t.charAt(0).toUpperCase() + t.slice(1);
-        select1.appendChild(opt1);
-
-        const opt2 = document.createElement('option');
-        opt2.value = t;
-        opt2.innerText = t.charAt(0).toUpperCase() + t.slice(1);
-        select2.appendChild(opt2);
+        const nombre = t.charAt(0).toUpperCase() + t.slice(1);
+        select1.innerHTML += `<option value="${t}">${nombre}</option>`;
+        select2.innerHTML += `<option value="${t}">${nombre}</option>`;
     });
 
     function calcular() {
@@ -115,50 +123,70 @@
 
         if (t1 === 'none') return;
 
-        // Multiplicadores
         let effectiveness = {};
 
+        // Recorremos cada tipo atacante para ver cuánto daño le hace a la combinación seleccionada
         types.forEach(atacante => {
-            let mult1 = (typeChart[atacante][t1] !== undefined) ? typeChart[atacante][t1] : 1;
-            let mult2 = 1;
+            // Obtenemos el valor base (2, 0.5, 0, 1) del chart
+            let base1 = (typeChart[atacante][t1] !== undefined) ? typeChart[atacante][t1] : 1;
+            let base2 = 1;
             
-            if (t2 !== 'none') {
-                mult2 = (typeChart[atacante][t2] !== undefined) ? typeChart[atacante][t2] : 1;
+            if (t2 !== 'none' && t2 !== t1) {
+                base2 = (typeChart[atacante][t2] !== undefined) ? typeChart[atacante][t2] : 1;
             }
 
-            // AJUSTE POKÉMON GO (La inmunidad no es 0, es 0.390625)
-            if (mult1 === 0) mult1 = 0.390625;
-            if (mult2 === 0) mult2 = 0.390625;
+            // Convertimos a matemática GO
+            let m1 = obtenerMultiplicadorGO(base1);
+            let m2 = obtenerMultiplicadorGO(base2);
 
-            effectiveness[atacante] = mult1 * mult2;
+            // Multiplicamos los factores (Ej: Planta+Hielo vs Fuego -> 1.6 * 1.6 = 2.56)
+            let total = m1 * m2;
+            
+            // Guardamos el resultado con 3 decimales para evitar errores de redondeo
+            effectiveness[atacante] = parseFloat(total.toFixed(3));
         });
 
-        // Clasificar resultados
-        let debilidadDoble = []; // > 1.6 (aprox 2.56)
-        let debilidad = [];      // > 1 (1.6)
-        let resistencia = [];    // < 1 (0.625)
-        let resistenciaDoble = []; // < 0.6 (0.39 o 0.24)
+        // Clasificar resultados en listas
+        let debilidadDoble = [];   // Aprox 2.56
+        let debilidad = [];        // Aprox 1.6
+        let resistencia = [];      // Aprox 0.625
+        let resistenciaDoble = []; // Aprox 0.39 o menos
 
         for (const [tipo, valor] of Object.entries(effectiveness)) {
-            if (valor > 1.61) debilidadDoble.push(tipo);
-            else if (valor > 1) debilidad.push(tipo);
-            else if (valor < 0.391) resistenciaDoble.push(tipo);
-            else if (valor < 1) resistencia.push(tipo);
+            if (valor > 1.61) {
+                debilidadDoble.push(tipo);
+            } else if (valor > 1.01) {
+                debilidad.push(tipo);
+            } else if (valor < 0.6) { // Menor a 0.6 significa resistencia doble o triple
+                resistenciaDoble.push(tipo);
+            } else if (valor < 0.99) {
+                resistencia.push(tipo);
+            }
         }
 
         // Renderizar HTML
-        const html = `
-            ${generarSeccion('☠️ Debilidad Doble (2.56x)', debilidadDoble)}
-            ${generarSeccion('💥 Debilidades (1.6x)', debilidad)}
-            ${generarSeccion('🛡️ Resistencias (0.625x)', resistencia)}
-            ${generarSeccion('🏰 Resistencia Doble/Inmune (0.39x)', resistenciaDoble)}
-        `;
+        let html = '';
+        
+        if(debilidadDoble.length > 0) 
+            html += generarSeccion('☠️ Doble Debilidad (x2.56)', debilidadDoble);
+        
+        if(debilidad.length > 0) 
+            html += generarSeccion('💥 Debilidad (x1.6)', debilidad);
+            
+        // Si no tiene debilidades (raro, como Sableye antiguo), mostrar mensaje
+        if(debilidadDoble.length === 0 && debilidad.length === 0)
+            html += '<p style="text-align:center; margin-top:20px;">Este Pokémon no tiene debilidades claras.</p>';
+
+        if(resistencia.length > 0) 
+            html += generarSeccion('🛡️ Resistencia (x0.625)', resistencia);
+            
+        if(resistenciaDoble.length > 0) 
+            html += generarSeccion('🏰 Resistencia Doble/Inmune (x0.39)', resistenciaDoble);
         
         container.innerHTML = html;
     }
 
     function generarSeccion(titulo, lista) {
-        if (lista.length === 0) return '';
         let badges = lista.map(t => `<span class="type-badge ${t}">${t.toUpperCase()}</span>`).join('');
         return `<h3>${titulo}</h3><div>${badges}</div>`;
     }
