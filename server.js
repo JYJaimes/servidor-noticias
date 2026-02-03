@@ -109,7 +109,7 @@ app.post('/api/login', (req, res) => {
     
     db.query(sqlSearch, [username], async (err, result) => {
         if (err) {
-            console.error("Error en query:", err); // Agregué logs para ver errores en Railway
+            console.error("Error en query:", err); 
             return res.status(500).send(err);
         }
         if (result.length === 0) return res.status(404).send({ message: "Usuario no encontrado" });
@@ -130,8 +130,6 @@ app.post('/api/login', (req, res) => {
         }
 
         // Verificar contraseña
-        // OJO: Esto requiere que la contraseña en la BD esté ENCRIPTADA con bcrypt.
-        // Si en tu BD pusiste "1234" manual, esto fallará. 
         const validPassword = await bcrypt.compare(password, user.password);
 
         if (!validPassword) {
