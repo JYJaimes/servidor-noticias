@@ -17,10 +17,7 @@ app.use(express.static('public')); // Para servir tus HTML y CSS
 
 
 
-// --- 2. CONEXIÓN BD ---
-// CAMBIO IMPORTANTE: Ahora la variable se llama 'db' para que coincida con tus rutas
-// --- 2. CONEXIÓN BD (MODO POOL) ---
-// Usamos createPool en lugar de createConnection para que no se desconecte
+// --- 2. CONEXIÓN BD  ---
 const db = mysql.createPool({
     host: process.env.MYSQLHOST || 'mainline.proxy.rlwy.net',
     user: process.env.MYSQLUSER || 'root',
