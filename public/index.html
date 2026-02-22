@@ -98,7 +98,7 @@
 
         /* --- ACORDEÓN (HISTORIAL) --- */
         .accordion-btn {
-            background-color: #e9ecef; /* Gris claro */
+            background-color: #e9ecef;
             color: #444;
             cursor: pointer;
             padding: 18px;
@@ -117,34 +117,20 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
-        .accordion-btn:hover {
-            background-color: #dbe0e5;
-        }
+        .accordion-btn:hover { background-color: #dbe0e5; }
+        .accordion-btn.active { background-color: #007bff; color: white; }
 
-        /* Clase activa para cambiar color cuando está abierto */
-        .accordion-btn.active {
-            background-color: #007bff;
-            color: white;
-        }
-
-        /* El contenedor que se oculta/muestra */
         .panel-historial {
             padding: 0 5px;
             background-color: transparent;
-            max-height: 0; /* Cerrado por defecto */
+            max-height: 0; 
             overflow: hidden;
-            transition: max-height 0.3s ease-out; /* Animación suave */
+            transition: max-height 0.3s ease-out; 
             margin-bottom: 20px;
         }
 
-        .rotate-icon {
-            transition: transform 0.3s ease;
-        }
-
-        /* Rotar la flecha cuando está activo */
-        .accordion-btn.active .rotate-icon {
-            transform: rotate(180deg);
-        }
+        .rotate-icon { transition: transform 0.3s ease; }
+        .accordion-btn.active .rotate-icon { transform: rotate(180deg); }
 
         /* --- UBICACIÓN --- */
         .ubicacion-section {
@@ -173,7 +159,6 @@
         /* --- CONTENEDOR DE TARJETAS --- */
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-top: 15px; }
         
-        /* --- TARJETA DE NOTICIA --- */
         .card { background: white; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden; display: flex; flex-direction: column; }
         .card-header { padding: 15px; background: #007bff; color: white; }
         .card-header h3 { margin: 0; font-size: 1.2em; }
@@ -185,8 +170,17 @@
         .tab-btn:hover { background: #ddd; }
         .tab-btn.active { border-bottom: 3px solid #007bff; color: #007bff; background: white; }
 
+        /* --- IMÁGENES DENTRO DE LA TARJETA --- */
         .img-container { height: 300px; background: #ddd; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        .img-container img { width: 100%; height: 100%; object-fit: contain; } 
+        .img-container img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            cursor: pointer; /* Cambia a manita */
+            transition: transform 0.3s; /* Animación suave */
+        } 
+        /* Efecto hover: se agranda un poco al pasar el mouse */
+        .img-container img:hover { transform: scale(1.03); }
         
         .seccion-vacia { color: #888; font-style: italic; }
 
@@ -200,20 +194,9 @@
         }
 
         .social-icons { margin: 20px 0; }
-
         .social-link {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 40px;
-            height: 40px;
-            margin: 0 10px;
-            border-radius: 50%;
-            background-color: #444;
-            color: white;
-            text-decoration: none;
-            font-size: 1.2rem;
-            transition: 0.3s;
+            display: inline-flex; justify-content: center; align-items: center; width: 40px; height: 40px; margin: 0 10px;
+            border-radius: 50%; background-color: #444; color: white; text-decoration: none; font-size: 1.2rem; transition: 0.3s;
         }
 
         .social-link.facebook:hover { background-color: #3b5998; }
@@ -222,15 +205,88 @@
         .social-link.whatsapp:hover { background-color: #25D366; }
         .social-link.tiktok:hover { background-color: #fe2c55; }
         .social-link.campfire:hover { background-color: #ff6c2f; }
+
+        /* =========================================================
+           ESTILOS DEL LIGHTBOX (VISOR DE IMAGEN AGRANDADA) 
+           ========================================================= */
+        .lightbox {
+            display: none; /* Oculto por defecto */
+            position: fixed;
+            z-index: 9999; /* Por encima de todo */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro transparente */
+            backdrop-filter: blur(8px); /* EFECTO BORROSO DE FONDO */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 85%;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            object-fit: contain;
+            animation: zoomIn 0.3s ease; /* Pequeño salto al abrir */
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Contenedor de los botones superiores */
+        .lightbox-controls {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        /* Botones de descargar y cerrar */
+        .lightbox-btn {
+            color: white;
+            font-size: 35px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+            background: rgba(0, 0, 0, 0.5);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+        }
+
+        .lightbox-btn:hover {
+            color: #007bff;
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
+
+    <div id="miLightbox" class="lightbox">
+        <div class="lightbox-controls">
+            <a id="btn-descargar" class="lightbox-btn" title="Descargar Imagen">
+                <i class="fas fa-download"></i>
+            </a>
+            <span class="lightbox-btn" onclick="cerrarLightbox()" title="Minimizar">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <img id="lightbox-img" class="lightbox-content" src="">
+    </div>
 
     <div id="mySidenav" class="sidenav">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
         <a href="/index.html"><i class="fas fa-home"></i> Inicio</a>
         <a href="/calculadora.html"><i class="fas fa-calculator"></i> Calculadora Tipos</a>
-        
         <a href="/login.html" class="admin-bottom"><i class="fas fa-user-shield"></i> Ir al Admin</a>
     </div>
 
@@ -238,7 +294,7 @@
         <div class="logo-container">
             <img src="/uploads/logo.png" alt="Logo del Evento" class="responsive-logo">
         </div>
-        <h1>Pokemon Go CDMX OFICIAL</h1>
+        <h1>Noticias del Evento</h1>
         
         <span class="burger-icon" onclick="openNav()">
             <i class="fas fa-bars"></i>
@@ -254,40 +310,31 @@
     <div id="container-proximos" class="grid-container"></div>
 
     <h2 style="margin-top: 50px;">Historial</h2>
-    
     <button class="accordion-btn" onclick="toggleHistorial()">
         <span><i class="fas fa-history"></i> Ver Eventos Pasados</span>
         <i class="fas fa-chevron-down rotate-icon"></i>
     </button>
-
     <div id="historial-wrapper" class="panel-historial">
         <div id="container-pasados" class="grid-container"></div>
     </div>
 
 
     <script>
-        // --- FUNCIÓN PARA EL ACORDEÓN DEL HISTORIAL ---
         function toggleHistorial() {
             const btn = document.querySelector('.accordion-btn');
             const panel = document.getElementById('historial-wrapper');
-            
-            // Alternar clase para estilos del botón (cambio de color y rotación flecha)
             btn.classList.toggle("active");
-
-            // Lógica para abrir/cerrar con animación
             if (panel.style.maxHeight) {
-                panel.style.maxHeight = null; // Cierra
+                panel.style.maxHeight = null; 
             } else {
-                panel.style.maxHeight = panel.scrollHeight + "px"; // Abre al tamaño del contenido
+                panel.style.maxHeight = panel.scrollHeight + "px"; 
             }
         }
 
-        // Función principal que se ejecuta al cargar
         async function cargarNoticias() {
             try {
                 const response = await fetch('/api/noticias');
                 const noticias = await response.json();
-
                 const ahora = new Date();
 
                 const cActivos = document.getElementById('container-activos');
@@ -305,21 +352,15 @@
                         contenido = JSON.parse(contenido);
                     }
 
-                    // --- LÓGICA DE CLASIFICACIÓN ---
                     let contenedorDestino;
-
                     if (ahora >= inicio && ahora <= fin) {
-                        contenedorDestino = cActivos;
-                        countActivos++;
+                        contenedorDestino = cActivos; countActivos++;
                     } else if (ahora < inicio) {
-                        contenedorDestino = cProximos;
-                        countProximos++;
+                        contenedorDestino = cProximos; countProximos++;
                     } else {
-                        contenedorDestino = cPasados;
-                        countPasados++;
+                        contenedorDestino = cPasados; countPasados++;
                     }
 
-                    // --- CREAR TARJETA HTML ---
                     const card = document.createElement('div');
                     card.className = 'card';
                     
@@ -341,10 +382,9 @@
                             ${tabsHTML}
                         </div>
                         <div class="img-container">
-                            <img src="${contenido[0].imagen}" alt="Infografía">
+                            <img src="${contenido[0].imagen}" alt="Infografía" onclick="abrirLightbox(this.src)">
                         </div>
                     `;
-
                     contenedorDestino.appendChild(card);
                 });
 
@@ -364,6 +404,62 @@
             boton.classList.add('active');
             const img = card.querySelector('.img-container img');
             img.src = urlImagen;
+        }
+
+        // ==============================================
+        // FUNCIONES DE JAVASCRIPT PARA EL LIGHTBOX
+        // ==============================================
+
+        // 1. Abrir la imagen en grande
+        window.abrirLightbox = function(srcUrl) {
+            const lightbox = document.getElementById("miLightbox");
+            const imgLg = document.getElementById("lightbox-img");
+            const btnDescargar = document.getElementById("btn-descargar");
+            
+            // Ponemos la URL de la imagen clickeada en la imagen en grande
+            imgLg.src = srcUrl;
+            
+            // Configuramos la descarga usando un Blob para forzar al navegador a guardar
+            btnDescargar.onclick = function(e) {
+                e.preventDefault();
+                // Mostramos un texto de que está cargando por si pesa mucho
+                btnDescargar.innerHTML = '<i class="fas fa-spinner fa-spin"></i>'; 
+                
+                fetch(srcUrl)
+                    .then(response => response.blob())
+                    .then(blob => {
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = blobUrl;
+                        a.download = 'infografia_pokemon_go.jpg'; // Nombre con el que se guarda
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(blobUrl);
+                        // Regresar el icono a su estado normal
+                        btnDescargar.innerHTML = '<i class="fas fa-download"></i>'; 
+                    })
+                    .catch(() => {
+                        alert('Error al descargar la imagen.');
+                        btnDescargar.innerHTML = '<i class="fas fa-download"></i>';
+                    });
+            };
+
+            // Mostramos el fondo oscuro
+            lightbox.style.display = "flex";
+        }
+
+        // 2. Cerrar (Minimizar) la imagen
+        window.cerrarLightbox = function() {
+            document.getElementById("miLightbox").style.display = "none";
+        }
+
+        // 3. Si el usuario da clic fuera de la foto (en lo borroso), también se cierra
+        window.onclick = function(event) {
+            const lightbox = document.getElementById("miLightbox");
+            if (event.target == lightbox) {
+                cerrarLightbox();
+            }
         }
 
         cargarNoticias();
@@ -395,24 +491,19 @@
             <a href="https://www.facebook.com/groups/544183595780445/?ref=share&mibextid=NSMWBT" target="_blank" class="social-link facebook">
                 <i class="fab fa-facebook-f"></i>
             </a>
-            
             <a href="https://www.instagram.com/pokemongocdmxoficial?igsh=MTBpeXYwOHhvMHc4aw==" target="_blank" class="social-link instagram">
                 <i class="fab fa-instagram"></i>
             </a>
-            
             <a href="https://x.com/PoGoCDMXOficial" target="_blank" class="social-link twitter">
                 <i class="fab fa-twitter"></i>
             </a>
-
             <a href=" https://whatsapp.com/channel/0029VbApOTO3rZZeh9PT3T1b" target="_blank" class="social-link whatsapp">
                 <i class="fab fa-whatsapp"></i>
             </a>
-
-            <a href="https://campfire.onelink.me/eBr8?af_dp=campfire://&af_force_deeplink=true&deep_link_sub1=cj1jbHVicyZjPTc3NDdjNGY0LWJhZTEtNDI1Yy1hOTZjLTliOTFjZGVlOTNjOCZpPXRydWU=" target="_blank" class="social-link campfire">
+            <a href="https://campfire.onelink.me/eBr8?af_dp=campfire://&af_force_deeplink=true&deep_link_sub1=cj1jbHVicyZjPTc3NDdjNGY0LWJhZTEtNDI1Yy1hOTZjLTliOTFjZGVlOTNjOCZpPXRydWU=" target="_blank" class="social-link campfire" target="_blank" class="social-link campfire">
                 <i class="fas fa-fire"></i>
             </a>
-
-            <a href="https://www.tiktok.com/@comunidadpokemongocdmx?_r=1&_t=ZS-9330qRSUTk8" target="_blank" class="social-link tiktok">
+            <a href="https://www.tiktok.com/@comunidadpokemongocdmx?_r=1&_t=ZS-9330qRSUTk8" target="_blank" class="social-link tiktok" target="_blank" class="social-link tiktok">
                 <i class="fab fa-tiktok"></i>
             </a>
         </div>
